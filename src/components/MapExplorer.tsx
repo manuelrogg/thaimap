@@ -70,6 +70,12 @@ export function MapExplorer({
   const [sheetExpanded, setSheetExpanded] = useState(false);
 
   const level: Level = activeCity ? "gym" : activeRegion ? "city" : "region";
+  // Mirror the current level into a ref so the map's (once-registered) click
+  // handler can read it. Without this, clicking a city/gym marker also fires
+  // the regions-fill map click (real mouse events propagate to the map),
+  // which would reset activeCity → the badge appears to "do nothing".
+  const levelRef = useRef<Level>(level);
+  levelRef.current = level;
   const regionDef = REGIONS.find((r) => r.id === activeRegion);
   const cityObj = cities.find((c) => c.slug === activeCity);
   const citiesInRegion = useMemo(
@@ -197,6 +203,10 @@ export function MapExplorer({
           hovered = null;
         });
         map.on("click", "regions-fill", (e) => {
+          // Only pick a region from the country-level view. Below that, the
+          // city/gym markers own clicks; letting this fire would wipe the
+          // selection a marker just made (see levelRef note above).
+          if (levelRef.current !== "region") return;
           const id = e.features?.[0]?.properties?.id as Region | undefined;
           if (id) {
             setActiveRegion(id);
@@ -275,7 +285,8 @@ export function MapExplorer({
           count.style.cssText = "font-variant-numeric:tabular-nums;opacity:0.85";
           btn.append(name, sep, count);
 
-          btn.addEventListener("click", () => {
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
             setActiveRegion(r.id);
             setActiveCity(null);
             setSelectedGymId(null);
@@ -301,7 +312,10 @@ export function MapExplorer({
           c.className = "rounded-full bg-amber-500 px-1.5 py-0.5 text-xs font-bold text-white";
           c.textContent = String(city.gym_count);
           btn.append(n, c);
-          btn.addEventListener("click", () => goCity(city.slug));
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            goCity(city.slug);
+          });
           cityMarkersRef.current.push(
             new ml.Marker({ element: btn }).setLngLat([city.center.lng, city.center.lat]).addTo(map),
           );
@@ -318,7 +332,10 @@ export function MapExplorer({
           btn.className =
             "max-w-[150px] truncate rounded-full border border-neutral-300 bg-white px-2.5 py-1 text-xs font-semibold text-neutral-800 shadow ring-1 ring-black/5 transition hover:border-amber-400 hover:text-amber-700 cursor-pointer";
           btn.textContent = g.name;
-          btn.addEventListener("click", () => setSelectedGymId(g.id));
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            setSelectedGymId(g.id);
+          });
           gymMarkersRef.current.push(
             new ml.Marker({ element: btn }).setLngLat([g.lng, g.lat]).addTo(map),
           );
