@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BedDouble, ChevronRight, Moon, Star, Sun, Swords } from "lucide-react";
+import { BedDouble, ChevronRight, Moon, Search, Star, Sun, Swords, X } from "lucide-react";
 import type { Map as MlMap, Marker, Popup, RasterTileSource } from "maplibre-gl";
 import type { City, Region } from "@/lib/types";
 import type { GymMapDatum } from "@/lib/data";
@@ -34,6 +34,18 @@ const FIGHT_LABEL: Record<GymMapDatum["fight_access"], string> = {
   selective: "Experienced only",
   rare: "Not a fight gym",
 };
+
+// Quick filters for fast browsing (applied to the gym list + map pins).
+const GYM_FILTERS: { key: string; label: string; test: (g: GymMapDatum) => boolean }[] = [
+  { key: "fights", label: "Fights easy", test: (g) => g.fight_access === "quick" },
+  { key: "stay", label: "On-site stay", test: (g) => g.has_accommodation },
+  {
+    key: "beginner",
+    label: "Beginner-friendly",
+    test: (g) => g.experience_level === "beginner" || g.known_for.includes("beginner-friendly"),
+  },
+  { key: "fighters", label: "Resident fighters", test: (g) => g.has_fighters },
+];
 
 function esc(s: string) {
   return s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
@@ -92,6 +104,8 @@ export function MapExplorer({
   const [selectedGymId, setSelectedGymId] = useState<string | null>(null);
   const [sheetExpanded, setSheetExpanded] = useState(false);
   const [dark, setDark] = useState(false);
+  const [query, setQuery] = useState("");
+  const [activeFilters, setActiveFilters] = useState<Set<string>>(new Set());
 
   const level: Level = activeCity ? "gym" : activeRegion ? "city" : "region";
   // Mirror the current level into a ref so the map's (once-registered) click
@@ -113,6 +127,19 @@ export function MapExplorer({
         .sort((a, b) => b.rating - a.rating || b.reviews - a.reviews),
     [gyms, activeCity],
   );
+  // Quick-filter the city's gyms — drives BOTH the list and the map pins.
+  const shownGyms = useMemo(() => {
+    if (activeFilters.size === 0) return gymsInCity;
+    const active = GYM_FILTERS.filter((f) => activeFilters.has(f.key));
+    return gymsInCity.filter((g) => active.every((f) => f.test(g)));
+  }, [gymsInCity, activeFilters]);
+
+  // Global name search (all gyms, any level). Empty query => no overlay.
+  const searchResults = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    return gyms.filter((g) => g.name.toLowerCase().includes(q)).slice(0, 8);
+  }, [gyms, query]);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
@@ -139,6 +166,22 @@ export function MapExplorer({
     setSelectedGymId(null);
     setSheetExpanded(true);
   };
+  // Jump straight to a gym from search (resolves its region from the city).
+  const goGym = (g: GymMapDatum) => {
+    const region = cities.find((c) => c.slug === g.citySlug)?.region ?? null;
+    setActiveRegion(region);
+    setActiveCity(g.citySlug);
+    setSelectedGymId(g.id);
+    setQuery("");
+    setSheetExpanded(true);
+  };
+  const toggleFilter = (key: string) =>
+    setActiveFilters((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
 
   // --- Create the map once, add region layers + interactions. ---
   useEffect(() => {
@@ -329,7 +372,7 @@ export function MapExplorer({
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className =
-            "flex items-center gap-1.5 rounded-full border border-blue-200 bg-white/95 px-3 py-1.5 text-sm font-semibold text-neutral-800 shadow-md ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:border-amber-400 hover:shadow-lg cursor-pointer";
+            "flex items-center gap-1.5 rounded-full border border-blue-200 bg-white/95 px-3 py-1.5 text-sm font-semibold text-neutral-800 shadow-md ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:border-blue-400 hover:shadow-lg cursor-pointer";
           const n = document.createElement("span");
           n.textContent = city.name;
           const c = document.createElement("span");
@@ -350,11 +393,11 @@ export function MapExplorer({
       gymMarkersRef.current.forEach((m) => m.remove());
       gymMarkersRef.current = [];
       if (level === "gym") {
-        gymsInCity.forEach((g) => {
+        shownGyms.forEach((g) => {
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className =
-            "max-w-[150px] truncate rounded-full border border-neutral-300 bg-white px-2.5 py-1 text-xs font-semibold text-neutral-800 shadow ring-1 ring-black/5 transition hover:border-amber-400 hover:text-blue-700 cursor-pointer";
+            "max-w-[150px] truncate rounded-full border border-neutral-300 bg-white px-2.5 py-1 text-xs font-semibold text-neutral-800 shadow ring-1 ring-black/5 transition hover:border-blue-400 hover:text-blue-700 cursor-pointer";
           btn.textContent = g.name;
           btn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -377,7 +420,7 @@ export function MapExplorer({
     };
     syncRef.current();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [level, activeRegion, activeCity, citiesInRegion, gymsInCity, regionCounts]);
+  }, [level, activeRegion, activeCity, citiesInRegion, shownGyms, regionCounts]);
 
   // --- Gym popup follows the selected gym. ---
   useEffect(() => {
@@ -441,7 +484,58 @@ export function MapExplorer({
           aria-label="Toggle panel"
         />
 
-        <div className="overflow-y-auto px-5 pb-5 pt-2 md:pt-5">
+        <div className="overflow-y-auto px-5 pb-5 pt-3 md:pt-4">
+          {/* Search */}
+          <div className="relative mb-3">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search gyms…"
+              className="w-full rounded-xl border border-neutral-200 bg-neutral-50 py-2 pl-9 pr-9 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-accent focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent/20"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label="Clear search"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 transition hover:text-neutral-700"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+
+          {query.trim() ? (
+            <ul className="space-y-2">
+              {searchResults.length === 0 ? (
+                <li className="px-1 py-6 text-center text-sm text-neutral-500">
+                  No gyms match “{query}”.
+                </li>
+              ) : (
+                searchResults.map((g) => (
+                  <li key={g.id}>
+                    <button
+                      onClick={() => goGym(g)}
+                      className="flex w-full items-center justify-between rounded-xl border border-neutral-200/80 p-3 text-left transition hover:-translate-y-0.5 hover:border-neutral-300"
+                    >
+                      <span className="min-w-0">
+                        <span className="block truncate font-semibold text-neutral-900">{g.name}</span>
+                        <span className="text-xs text-neutral-500">
+                          {cities.find((c) => c.slug === g.citySlug)?.name ?? g.citySlug}
+                        </span>
+                      </span>
+                      <span className="ml-2 inline-flex shrink-0 items-center gap-1 text-xs text-neutral-500">
+                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                        {g.rating.toFixed(1)}
+                      </span>
+                    </button>
+                  </li>
+                ))
+              )}
+            </ul>
+          ) : (
+            <>
           {/* Title (region level) */}
           {level === "region" && (
             <div className="mb-3">
@@ -513,8 +607,33 @@ export function MapExplorer({
           )}
 
           {level === "gym" && (
-            <ol className="space-y-2">
-              {gymsInCity.map((g) => (
+            <>
+              <div className="mb-3 flex flex-wrap gap-1.5">
+                {GYM_FILTERS.map((f) => {
+                  const on = activeFilters.has(f.key);
+                  return (
+                    <button
+                      key={f.key}
+                      type="button"
+                      onClick={() => toggleFilter(f.key)}
+                      className={`rounded-full px-3 py-1 text-xs font-medium ring-1 transition ${
+                        on
+                          ? "bg-accent text-white ring-accent"
+                          : "bg-white text-neutral-600 ring-neutral-200 hover:ring-neutral-300"
+                      }`}
+                    >
+                      {f.label}
+                    </button>
+                  );
+                })}
+              </div>
+              <ol className="space-y-2">
+                {shownGyms.length === 0 && (
+                  <li className="px-1 py-6 text-center text-sm text-neutral-500">
+                    No gyms match these filters.
+                  </li>
+                )}
+                {shownGyms.map((g) => (
                 <li key={g.id}>
                   <button
                     onClick={() => setSelectedGymId(g.id)}
@@ -556,8 +675,11 @@ export function MapExplorer({
                     </div>
                   </button>
                 </li>
-              ))}
-            </ol>
+                ))}
+              </ol>
+            </>
+          )}
+            </>
           )}
         </div>
       </div>
