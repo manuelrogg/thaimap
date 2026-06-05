@@ -43,6 +43,10 @@ type Spec = {
   style: string;
   desc: string;
   trainers?: Trainer[];
+  /** Editorial reviewed by a human (default true). New seeds set false. */
+  verified?: boolean;
+  /** Coordinates confirmed (default true). Set false when only area-accurate. */
+  coordsVerified?: boolean;
 };
 
 const SPECS: Spec[] = [
@@ -634,6 +638,164 @@ const SPECS: Spec[] = [
     style: "Authentic Chiang Rai training.",
     desc: "An authentic Chiang Rai gym with solid technical coaching — a genuine northern option for those exploring the scene beyond Chiang Mai.",
   },
+
+  // ===================================================================
+  // NEWLY ADDED — destination gyms (verified:false, coordsVerified:false)
+  // Coordinates are AREA-accurate (correct neighbourhood, not the exact
+  // door). Ratings/reviews are placeholders until the Google pipeline
+  // (M5) fills real numbers by place_id. Review each before launch.
+  // ===================================================================
+
+  // ---- Bangkok ----
+  {
+    id: "sitsongpeenong-bangkok", name: "Sitsongpeenong Bangkok", city: "bangkok",
+    lat: 13.69, lng: 100.54, rating: 4.7, reviews: 110,
+    level: "advanced", fighters: true, accom: true, price: "$$", priceNote: "estimate (placeholder)",
+    fight: "quick", fightNote: "Active stadium-fighter stable; capable trainees are matched quickly.",
+    tags: ["fighter-focused", "clinch", "authentic"],
+    style: "Authentic stadium-fighter stable with strong clinch.",
+    desc: "The Bangkok home of a respected fighter stable, built around clinch and high-level sparring with active stadium fighters in the room. Set up for serious trainees rather than casual drop-ins.",
+    verified: false, coordsVerified: false,
+  },
+  {
+    id: "yokkao-training-center", name: "Yokkao Training Center", city: "bangkok",
+    lat: 13.70, lng: 100.61, rating: 4.6, reviews: 90,
+    level: "mixed", fighters: true, accom: false, price: "$$", priceNote: "estimate (placeholder)",
+    fight: "standard", fightNote: "Trainers can arrange local fights for committed students.",
+    tags: ["technical", "tourist-friendly", "private-sessions"],
+    style: "Technical Muay Thai from a well-known fight brand.",
+    desc: "A drop-in-friendly Bangkok gym run by the Yokkao brand, with experienced trainers and a steady flow of visitors. Good for technical sessions and training alongside name fighters.",
+    verified: false, coordsVerified: false,
+  },
+  {
+    id: "sityodtong-bangkok", name: "Sityodtong Bangkok", city: "bangkok",
+    lat: 13.73, lng: 100.49, rating: 4.6, reviews: 70,
+    level: "mixed", fighters: true, accom: false, price: "$$", priceNote: "estimate (placeholder)",
+    fight: "standard", fightNote: "Historic camp; will put ready students on local cards.",
+    tags: ["authentic", "technical", "fighter-focused"],
+    style: "One of Muay Thai's historic lineages.",
+    desc: "The Bangkok branch of one of Muay Thai's oldest and most storied camps. Traditional coaching with a long competitive pedigree, suitable across levels.",
+    verified: false, coordsVerified: false,
+  },
+  {
+    id: "eminent-air", name: "Eminent Air Boxing Gym", city: "bangkok",
+    lat: 13.83, lng: 100.60, rating: 4.5, reviews: 60,
+    level: "mixed", fighters: true, accom: false, price: "$$", priceNote: "estimate (placeholder)",
+    fight: "standard", fightNote: "Old-school camp that matches keen students locally.",
+    tags: ["authentic", "fighter-focused", "conditioning"],
+    style: "Old-school Bangkok fight camp.",
+    desc: "A long-running, no-frills Bangkok camp with a real fighter pedigree. Traditional training and conditioning away from the tourist circuit.",
+    verified: false, coordsVerified: false,
+  },
+  {
+    id: "elite-fight-club-bangkok", name: "Elite Fight Club Bangkok", city: "bangkok",
+    lat: 13.74, lng: 100.58, rating: 4.6, reviews: 130,
+    level: "mixed", fighters: false, accom: false, price: "$$$", priceNote: "premium (placeholder)",
+    fight: "selective", fightNote: "Premium city gym focused on training quality more than booking fights.",
+    tags: ["technical", "tourist-friendly", "private-sessions"],
+    style: "Premium boutique training in the city centre.",
+    desc: "A polished, premium gym in central Bangkok aimed at professionals and travellers who want quality coaching in a modern space. More technique-and-fitness focused than a hard fight camp.",
+    verified: false, coordsVerified: false,
+  },
+  {
+    id: "rsm-academy", name: "RSM Muay Thai Academy", city: "bangkok",
+    lat: 13.738, lng: 100.560, rating: 4.6, reviews: 85,
+    level: "mixed", fighters: false, accom: false, price: "$$", priceNote: "estimate (placeholder)",
+    fight: "standard", fightNote: "Central gym; can arrange fights for committed trainees.",
+    tags: ["beginner-friendly", "tourist-friendly", "technical"],
+    style: "Convenient central-Bangkok Muay Thai.",
+    desc: "A conveniently located academy near Asok with a mixed crowd of locals and travellers. Easy to reach and welcoming to beginners while still serious about technique.",
+    verified: false, coordsVerified: false,
+  },
+
+  // ---- Phuket ----
+  {
+    id: "bangtao-muay-thai-mma", name: "Bangtao Muay Thai & MMA", city: "phuket",
+    lat: 7.995, lng: 98.295, rating: 4.7, reviews: 150,
+    level: "mixed", fighters: true, accom: true, price: "$$", priceNote: "estimate (placeholder)",
+    fight: "standard", fightNote: "Active fight team; ready students get matched on local cards.",
+    tags: ["technical", "tourist-friendly", "fighter-focused"],
+    style: "Modern Muay Thai with MMA and BJJ crossover.",
+    desc: "A modern Cherng Talay (Bang Tao) camp combining Muay Thai with MMA and BJJ under experienced coaches. Caters to all levels, from first-timers to its competitive fight team.",
+    verified: false, coordsVerified: false,
+  },
+  {
+    id: "rawai-muay-thai", name: "Rawai Muay Thai", city: "phuket",
+    lat: 7.778, lng: 98.325, rating: 4.6, reviews: 200,
+    level: "mixed", fighters: true, accom: true, price: "$$", priceNote: "estimate (placeholder)",
+    fight: "standard", fightNote: "Long-stay fighter gym; arranges fights for those who put in the work.",
+    tags: ["fighter-focused", "authentic", "conditioning"],
+    style: "Long-stay, fighter-oriented training.",
+    desc: "An established Rawai gym geared to long-stay trainees and aspiring fighters, with on-site accommodation. Training is serious but accessible to motivated beginners.",
+    verified: false, coordsVerified: false,
+  },
+  {
+    id: "sitsongpeenong-phuket", name: "Sitsongpeenong Phuket", city: "phuket",
+    lat: 7.785, lng: 98.323, rating: 4.7, reviews: 120,
+    level: "advanced", fighters: true, accom: true, price: "$$", priceNote: "estimate (placeholder)",
+    fight: "quick", fightNote: "Authentic fighter stable; capable trainees matched quickly.",
+    tags: ["fighter-focused", "clinch", "authentic"],
+    style: "Authentic fighter stable with strong clinch.",
+    desc: "The Phuket camp of a respected fighter stable, focused on authentic training and strong clinch work with active fighters. Best suited to those who already train.",
+    verified: false, coordsVerified: false,
+  },
+  {
+    id: "phuket-fight-club", name: "Phuket Fight Club", city: "phuket",
+    lat: 7.83, lng: 98.34, rating: 4.6, reviews: 70,
+    level: "advanced", fighters: true, accom: false, price: "$$", priceNote: "estimate (placeholder)",
+    fight: "quick", fightNote: "Competition-focused gym that actively develops and books fighters.",
+    tags: ["fighter-focused", "conditioning", "technical"],
+    style: "Competition-focused fighter development.",
+    desc: "A competition-oriented Chalong-area gym that produces and corners fighters. Hard, focused training for those chasing real fights rather than fitness classes.",
+    verified: false, coordsVerified: false,
+  },
+  {
+    id: "phuket-top-team", name: "Phuket Top Team", city: "phuket",
+    lat: 7.832, lng: 98.337, rating: 4.7, reviews: 180,
+    level: "mixed", fighters: true, accom: true, price: "$$", priceNote: "estimate (placeholder)",
+    fight: "standard", fightNote: "MMA-leaning camp; Muay Thai fights can be arranged for the ready.",
+    tags: ["technical", "tourist-friendly", "conditioning"],
+    style: "MMA-leaning camp with strong Muay Thai.",
+    desc: "A large Chalong camp best known for MMA but with a strong Muay Thai program and on-site facilities. Suits all levels and cross-training travellers.",
+    verified: false, coordsVerified: false,
+  },
+
+  // ---- Krabi ----
+  {
+    id: "emerald-muay-thai", name: "Emerald Muay Thai", city: "krabi",
+    lat: 8.03, lng: 98.83, rating: 4.6, reviews: 60,
+    level: "mixed", fighters: false, accom: false, price: "$$", priceNote: "estimate (placeholder)",
+    fight: "standard", fightNote: "Welcoming gym; can arrange local fights for committed students.",
+    tags: ["beginner-friendly", "tourist-friendly", "technical"],
+    style: "All-levels training in Krabi.",
+    desc: "A welcoming all-levels gym in the Krabi area with patient coaching for travellers and beginners, plus a path to local fights for those who stay and train.",
+    verified: false, coordsVerified: false,
+  },
+
+  // ---- Hua Hin ----
+  {
+    id: "sitjaopho", name: "Sitjaopho Muay Thai", city: "hua-hin",
+    lat: 12.57, lng: 99.96, rating: 4.9, reviews: 90,
+    level: "mixed", fighters: false, accom: true, price: "$$", priceNote: "estimate (placeholder)",
+    fight: "selective", fightNote: "Small technique-focused gym, not a resident fight stable.",
+    tags: ["technical", "private-sessions", "authentic"],
+    style: "Muay Femeu — clever, technical style.",
+    desc: "A small, highly regarded Hua Hin gym run by twin brothers Kru F and Kru O, focused on the clever 'femeu' technical style. Personal attention and clean technique over big group sessions.",
+    trainers: [{ name: "Kru F" }, { name: "Kru O" }],
+    verified: false, coordsVerified: false,
+  },
+
+  // ---- Pattaya ----
+  {
+    id: "combat-club-pattaya", name: "WKO Combat Club Pattaya", city: "pattaya",
+    lat: 12.92, lng: 100.88, rating: 4.6, reviews: 70,
+    level: "mixed", fighters: true, accom: false, price: "$$", priceNote: "estimate (placeholder)",
+    fight: "standard", fightNote: "Fighter-oriented gym; arranges local fights for the ready.",
+    tags: ["fighter-focused", "conditioning", "technical"],
+    style: "Fighter-oriented Pattaya training.",
+    desc: "A fighter-oriented Pattaya gym with a focused, no-frills atmosphere and regular local fight opportunities for committed trainees.",
+    verified: false, coordsVerified: false,
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -661,6 +823,7 @@ function toEditorial(s: Spec): GymEditorial {
     has_accommodation: s.accom,
     experience_level: s.level,
     has_fighters: s.fighters,
+    verified: s.verified ?? true,
   };
 }
 

@@ -79,6 +79,12 @@ export type GymEditorial = {
   experience_level: ExperienceLevel;
   /** Do active competitive (local/stadium) fighters train here? */
   has_fighters: boolean;
+  /**
+   * Editorial has been human-reviewed and is safe to show publicly. Newly
+   * seeded gyms default to false so they can be surfaced with an "unverified"
+   * marker and checked before launch. Treat undefined as true (legacy).
+   */
+  verified: boolean;
 };
 
 export type GooglePhoto = {
