@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BedDouble, ChevronRight, Star, Swords } from "lucide-react";
-import type { Map as MlMap, Marker, Popup } from "maplibre-gl";
+import { BedDouble, ChevronRight, Moon, Star, Sun, Swords } from "lucide-react";
+import type { Map as MlMap, Marker, Popup, RasterTileSource } from "maplibre-gl";
 import type { City, Region } from "@/lib/types";
 import type { GymMapDatum } from "@/lib/data";
 import {
   BASEMAP_STYLE,
+  BASEMAP_TILES,
   THAILAND_BOUNDS,
   THAILAND_MAX_BOUNDS,
   toLngLatBounds,
@@ -90,6 +91,7 @@ export function MapExplorer({
   const [activeCity, setActiveCity] = useState<string | null>(null);
   const [selectedGymId, setSelectedGymId] = useState<string | null>(null);
   const [sheetExpanded, setSheetExpanded] = useState(false);
+  const [dark, setDark] = useState(false);
 
   const level: Level = activeCity ? "gym" : activeRegion ? "city" : "region";
   // Mirror the current level into a ref so the map's (once-registered) click
@@ -393,11 +395,37 @@ export function MapExplorer({
       .addTo(map);
   }, [selectedGymId, level, gyms]);
 
+  // --- Light/dark basemap toggle. Swap raster tiles in place (keeps the mask +
+  // region layers and every marker — unlike map.setStyle, which wipes them). ---
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const apply = () => {
+      const src = map.getSource("carto") as RasterTileSource | undefined;
+      src?.setTiles([...(dark ? BASEMAP_TILES.dark : BASEMAP_TILES.light)]);
+      if (map.getLayer("mask-fill")) {
+        map.setPaintProperty("mask-fill", "fill-color", dark ? "#0a0a0a" : "#ffffff");
+      }
+    };
+    if (map.isStyleLoaded()) apply();
+    else map.once("load", apply);
+  }, [dark]);
+
   return (
     <main className="relative h-[100dvh] min-h-[640px] w-full overflow-hidden">
       <div className="absolute inset-0">
         <div ref={containerRef} className="h-full w-full" />
       </div>
+
+      {/* Light / dark basemap toggle */}
+      <button
+        type="button"
+        onClick={() => setDark((v) => !v)}
+        aria-label={dark ? "Switch to light map" : "Switch to dark map"}
+        className="pointer-events-auto absolute right-4 top-4 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-neutral-700 shadow-md ring-1 ring-black/5 backdrop-blur transition hover:text-accent"
+      >
+        {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      </button>
 
       {/* Sidebar (desktop) / bottom sheet (mobile) */}
       <div

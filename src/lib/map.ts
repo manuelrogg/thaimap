@@ -9,17 +9,23 @@ import type { Bounds } from "@/lib/types";
 // country; our own region pills + a few key Thai city labels are added back in
 // MapExplorer. Free, no API key.
 
+const cartoTiles = (style: string) =>
+  ["a", "b", "c", "d"].map(
+    (s) => `https://${s}.basemaps.cartocdn.com/rastertiles/${style}/{z}/{x}/{y}.png`,
+  );
+
+/** Light and dark no-label raster tile sets — swapped in place via setTiles(). */
+export const BASEMAP_TILES = {
+  light: cartoTiles("voyager_nolabels"),
+  dark: cartoTiles("dark_nolabels"),
+} as const;
+
 export const BASEMAP_STYLE: StyleSpecification = {
   version: 8,
   sources: {
     carto: {
       type: "raster",
-      tiles: [
-        "https://a.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png",
-        "https://b.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png",
-        "https://c.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png",
-        "https://d.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png",
-      ],
+      tiles: [...BASEMAP_TILES.light],
       tileSize: 256,
       attribution:
         '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>',
