@@ -6,7 +6,7 @@ import type { Gym } from "@/lib/types";
 // Kept dumb + server-renderable; CityView wraps it for hover/link behaviour.
 
 const GRADIENTS = [
-  "from-amber-200 to-orange-300",
+  "from-blue-200 to-orange-300",
   "from-rose-200 to-red-300",
   "from-sky-200 to-indigo-300",
   "from-emerald-200 to-teal-300",
@@ -63,7 +63,7 @@ export function GymListItem({ gym, rank }: { gym: Gym; rank: number }) {
           {gym.fight_access === "quick" && (
             <span className="text-green-600">· fights easy to get</span>
           )}
-          {gym.has_fighters && <span className="text-amber-600">· resident fighters</span>}
+          {gym.has_fighters && <span className="text-blue-600">· resident fighters</span>}
           {gym.has_accommodation && <span>· stays on-site</span>}
         </div>
         <p className="mt-1 line-clamp-2 text-sm text-neutral-600">

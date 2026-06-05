@@ -4,7 +4,7 @@ import { GymPhoto } from "@/components/GymPhoto";
 
 const FIGHT_ACCESS_META: Record<FightAccess, { label: string; cls: string }> = {
   quick: { label: "Fights easy to get", cls: "bg-green-50 text-green-800 ring-green-200" },
-  standard: { label: "Fights after some training", cls: "bg-amber-50 text-amber-800 ring-amber-200" },
+  standard: { label: "Fights after some training", cls: "bg-blue-50 text-blue-800 ring-blue-200" },
   selective: { label: "Experienced fighters only", cls: "bg-orange-50 text-orange-800 ring-orange-200" },
   rare: { label: "Not really a fight gym", cls: "bg-neutral-100 text-neutral-600 ring-neutral-200" },
 };
@@ -40,7 +40,7 @@ export function GymProfile({ gym, city }: { gym: Gym; city: City }) {
       <GymPhoto src={gym.heroImage ?? g?.photos?.[0]?.ref} name={gym.name} />
 
       <header>
-        <p className="text-xs font-medium uppercase tracking-wide text-amber-600">
+        <p className="text-xs font-medium uppercase tracking-wide text-blue-600">
           {city.name} · {city.region}
         </p>
         <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-900">
@@ -59,7 +59,7 @@ export function GymProfile({ gym, city }: { gym: Gym; city: City }) {
           {(gym.known_for ?? []).map((tag) => (
             <span
               key={tag}
-              className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800"
+              className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800"
             >
               {tag}
             </span>
@@ -111,7 +111,7 @@ export function GymProfile({ gym, city }: { gym: Gym; city: City }) {
               href={g.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="block text-sm text-amber-700 hover:underline"
+              className="block text-sm text-blue-700 hover:underline"
             >
               {g.website.replace(/^https?:\/\//, "")}
             </a>

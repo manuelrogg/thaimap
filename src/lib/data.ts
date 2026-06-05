@@ -123,9 +123,11 @@ export type GymMapDatum = {
   price_range: PriceRange;
   experience_level: ExperienceLevel;
   has_fighters: boolean;
+  has_accommodation: boolean;
   fight_access: FightAccess;
   fight_note: string;
   known_for: KnownForTag[];
+  verified: boolean;
 };
 
 export function getGymMapData(): GymMapDatum[] {
@@ -144,9 +146,11 @@ export function getGymMapData(): GymMapDatum[] {
       price_range: e.price_range,
       experience_level: e.experience_level,
       has_fighters: e.has_fighters,
+      has_accommodation: e.has_accommodation,
       fight_access: fa?.access ?? "standard",
       fight_note: fa?.note ?? "",
       known_for: e.known_for,
+      verified: e.verified,
     };
   });
 }

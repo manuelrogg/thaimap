@@ -68,7 +68,7 @@ export default async function GymCanonicalPage({
         <div className="border-b border-neutral-200 px-5 py-3">
           <Link
             href={`/city/${city.slug}`}
-            className="inline-flex items-center gap-1 text-xs font-medium text-amber-600 hover:text-amber-700"
+            className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700"
           >
             <ChevronLeft className="h-3.5 w-3.5" />
             Back to {city.name}

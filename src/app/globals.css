@@ -2,7 +2,7 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0a0a0a;
 }
 
 @theme inline {
@@ -10,17 +10,28 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Brand accent — electric blue. Use via bg-accent / text-accent / etc. */
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4ed8;
+  --color-accent-soft: #eff4ff;
+  --color-accent-fg: #ffffff;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* Light-first UI. The map has its own light/dark toggle; we don't flip the
+   whole chrome with the OS theme (it left panels half-dark). */
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Snappy, subtle spring-ish easing shared by interactive chrome. */
+@media (prefers-reduced-motion: no-preference) {
+  .transition,
+  .transition-colors,
+  .transition-transform {
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
 }

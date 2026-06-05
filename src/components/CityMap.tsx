@@ -16,7 +16,7 @@ import { BASEMAP_STYLE, CITY_ZOOM, padBounds, toLngLatBounds } from "@/lib/map";
 const PIN_BASE =
   "flex h-7 w-7 items-center justify-center rounded-full border-2 border-white text-xs font-bold text-white shadow-md cursor-pointer transition-transform duration-150";
 const PIN_IDLE = "bg-neutral-700";
-const PIN_ACTIVE = "bg-amber-500 scale-[1.35]";
+const PIN_ACTIVE = "bg-blue-500 scale-[1.35]";
 
 function pinClass(active: boolean) {
   return `${PIN_BASE} ${active ? PIN_ACTIVE : PIN_IDLE}`;

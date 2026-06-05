@@ -3,7 +3,7 @@
 // (M5) -> a gradient placeholder with the gym's initial (no external request).
 
 const GRADIENTS = [
-  "from-amber-200 to-orange-300",
+  "from-blue-200 to-orange-300",
   "from-rose-200 to-red-300",
   "from-sky-200 to-indigo-300",
   "from-emerald-200 to-teal-300",

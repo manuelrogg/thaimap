@@ -82,7 +82,7 @@ export function CityFilters({ value, onChange, resultCount, total }: Props) {
           aria-pressed={value.accommodation}
           className={`rounded-lg border px-2.5 py-1.5 text-sm font-medium transition ${
             value.accommodation
-              ? "border-amber-400 bg-amber-50 text-amber-800"
+              ? "border-amber-400 bg-blue-50 text-blue-800"
               : "border-neutral-300 text-neutral-600 hover:border-neutral-400"
           }`}
         >
@@ -101,7 +101,7 @@ export function CityFilters({ value, onChange, resultCount, total }: Props) {
               aria-pressed={on}
               className={`rounded-full px-2 py-0.5 text-xs transition ${
                 on
-                  ? "bg-amber-500 text-white"
+                  ? "bg-blue-500 text-white"
                   : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
               }`}
             >
@@ -119,7 +119,7 @@ export function CityFilters({ value, onChange, resultCount, total }: Props) {
           <button
             type="button"
             onClick={() => onChange({ q: "", level: null, price: null, accommodation: false, tags: [] })}
-            className="font-medium text-amber-600 hover:text-amber-700"
+            className="font-medium text-blue-600 hover:text-blue-700"
           >
             Clear filters
           </button>

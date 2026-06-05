@@ -80,7 +80,7 @@ export function CityView({ city, gyms }: { city: City; gyms: Gym[] }) {
         <div className="min-w-0">
           <Link
             href="/"
-            className="inline-flex items-center gap-1 text-xs font-medium text-amber-600 hover:text-amber-700"
+            className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700"
           >
             <ChevronLeft className="h-3.5 w-3.5" />
             All of Thailand
@@ -101,7 +101,7 @@ export function CityView({ city, gyms }: { city: City; gyms: Gym[] }) {
               onClick={() => setMobileView(v)}
               className={`rounded-md px-3 py-1 font-medium capitalize transition ${
                 mobileView === v
-                  ? "bg-amber-500 text-white"
+                  ? "bg-blue-500 text-white"
                   : "text-neutral-600 hover:text-neutral-900"
               }`}
             >
@@ -133,7 +133,7 @@ export function CityView({ city, gyms }: { city: City; gyms: Gym[] }) {
                   onClick={() =>
                     setFilters({ q: "", level: null, price: null, accommodation: false, tags: [] })
                   }
-                  className="mt-2 font-medium text-amber-600 hover:text-amber-700"
+                  className="mt-2 font-medium text-blue-600 hover:text-blue-700"
                 >
                   Clear filters
                 </button>

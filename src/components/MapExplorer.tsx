@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronRight, Star } from "lucide-react";
+import { BedDouble, ChevronRight, Star, Swords } from "lucide-react";
 import type { Map as MlMap, Marker, Popup } from "maplibre-gl";
 import type { City, Region } from "@/lib/types";
 import type { GymMapDatum } from "@/lib/data";
@@ -49,10 +49,32 @@ function gymPopupHTML(g: GymMapDatum): string {
   return `<div class="w-56">
     <div class="text-sm font-bold text-neutral-900">${esc(g.name)}</div>
     <div class="mt-0.5 inline-flex items-center gap-1 text-xs text-neutral-600">${SVG_STAR} ${g.rating.toFixed(1)} · ${g.price_range} · ${g.experience_level}${g.has_fighters ? " · resident fighters" : ""}</div>
-    <div class="mt-1 flex items-center gap-1 text-xs font-medium text-amber-700">${SVG_SWORDS} ${FIGHT_LABEL[g.fight_access]}</div>
+    <div class="mt-1 flex items-center gap-1 text-xs font-medium text-blue-700">${SVG_SWORDS} ${FIGHT_LABEL[g.fight_access]}</div>
     <p class="mt-0.5 text-xs text-neutral-500">${esc(g.fight_note)}</p>
     <a href="/city/${g.citySlug}/${g.slug}" class="mt-2 inline-block rounded bg-neutral-900 px-2.5 py-1 text-xs font-semibold text-white">View full profile</a>
   </div>`;
+}
+
+// Compact signal pill used in the gym cards.
+function Pill({
+  children,
+  tone = "neutral",
+}: {
+  children: React.ReactNode;
+  tone?: "neutral" | "accent" | "muted";
+}) {
+  const tones = {
+    neutral: "bg-neutral-100 text-neutral-700",
+    accent: "bg-accent-soft text-accent",
+    muted: "bg-neutral-100 text-neutral-400",
+  } as const;
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${tones[tone]}`}
+    >
+      {children}
+    </span>
+  );
 }
 
 export function MapExplorer({
@@ -305,11 +327,11 @@ export function MapExplorer({
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className =
-            "flex items-center gap-1.5 rounded-full border border-amber-200 bg-white/95 px-3 py-1.5 text-sm font-semibold text-neutral-800 shadow-md ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:border-amber-400 hover:shadow-lg cursor-pointer";
+            "flex items-center gap-1.5 rounded-full border border-blue-200 bg-white/95 px-3 py-1.5 text-sm font-semibold text-neutral-800 shadow-md ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:border-amber-400 hover:shadow-lg cursor-pointer";
           const n = document.createElement("span");
           n.textContent = city.name;
           const c = document.createElement("span");
-          c.className = "rounded-full bg-amber-500 px-1.5 py-0.5 text-xs font-bold text-white";
+          c.className = "rounded-full bg-blue-500 px-1.5 py-0.5 text-xs font-bold text-white";
           c.textContent = String(city.gym_count);
           btn.append(n, c);
           btn.addEventListener("click", (e) => {
@@ -330,7 +352,7 @@ export function MapExplorer({
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className =
-            "max-w-[150px] truncate rounded-full border border-neutral-300 bg-white px-2.5 py-1 text-xs font-semibold text-neutral-800 shadow ring-1 ring-black/5 transition hover:border-amber-400 hover:text-amber-700 cursor-pointer";
+            "max-w-[150px] truncate rounded-full border border-neutral-300 bg-white px-2.5 py-1 text-xs font-semibold text-neutral-800 shadow ring-1 ring-black/5 transition hover:border-amber-400 hover:text-blue-700 cursor-pointer";
           btn.textContent = g.name;
           btn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -379,7 +401,7 @@ export function MapExplorer({
 
       {/* Sidebar (desktop) / bottom sheet (mobile) */}
       <div
-        className={`pointer-events-auto absolute inset-x-0 bottom-0 z-10 flex flex-col rounded-t-2xl bg-white/95 shadow-xl ring-1 ring-black/5 backdrop-blur md:inset-x-auto md:bottom-auto md:left-4 md:top-4 md:w-[360px] md:rounded-2xl ${
+        className={`pointer-events-auto absolute inset-x-0 bottom-0 z-10 flex flex-col rounded-t-2xl bg-white/90 shadow-[0_8px_40px_rgba(0,0,0,0.10)] ring-1 ring-black/5 backdrop-blur-xl md:inset-x-auto md:bottom-auto md:left-4 md:top-4 md:w-[370px] md:rounded-2xl ${
           sheetExpanded ? "max-h-[80dvh]" : "max-h-[44dvh]"
         } md:max-h-[calc(100dvh-2rem)]`}
       >
@@ -405,7 +427,7 @@ export function MapExplorer({
           {/* Breadcrumb */}
           {level !== "region" && (
             <nav className="mb-3 flex flex-wrap items-center gap-1 text-sm">
-              <button onClick={goRegions} className="font-medium text-amber-600 hover:text-amber-700">
+              <button onClick={goRegions} className="font-medium text-blue-600 hover:text-blue-700">
                 Thailand
               </button>
               <ChevronRight className="h-3.5 w-3.5 text-neutral-300" />
@@ -413,7 +435,7 @@ export function MapExplorer({
                 <>
                   <button
                     onClick={() => goRegion(activeRegion)}
-                    className="font-medium text-amber-600 hover:text-amber-700"
+                    className="font-medium text-blue-600 hover:text-blue-700"
                   >
                     {regionDef?.name}
                   </button>
@@ -452,7 +474,7 @@ export function MapExplorer({
                 <li key={c.slug}>
                   <button
                     onClick={() => goCity(c.slug)}
-                    className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm font-medium text-neutral-800 transition hover:bg-amber-50"
+                    className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm font-medium text-neutral-800 transition hover:bg-blue-50"
                   >
                     <span>{c.name}</span>
                     <span className="text-neutral-500">{c.gym_count} gyms</span>
@@ -463,27 +485,45 @@ export function MapExplorer({
           )}
 
           {level === "gym" && (
-            <ol className="space-y-1.5">
-              {gymsInCity.map((g, i) => (
+            <ol className="space-y-2">
+              {gymsInCity.map((g) => (
                 <li key={g.id}>
                   <button
                     onClick={() => setSelectedGymId(g.id)}
-                    className={`w-full rounded-lg border px-3 py-2 text-left transition hover:border-amber-300 hover:bg-amber-50 ${
-                      selectedGymId === g.id ? "border-amber-400 bg-amber-50" : "border-neutral-200"
+                    className={`w-full rounded-2xl border p-4 text-left transition hover:-translate-y-0.5 ${
+                      selectedGymId === g.id
+                        ? "border-accent bg-accent-soft"
+                        : "border-neutral-200/80 hover:border-neutral-300"
                     }`}
                   >
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-xs font-bold text-neutral-300">{i + 1}</span>
-                      <span className="font-semibold text-neutral-900">{g.name}</span>
-                      <span className="inline-flex items-center gap-0.5 text-xs text-neutral-500">
+                    <div className="flex items-center gap-2">
+                      <span className="truncate font-semibold tracking-tight text-neutral-900">
+                        {g.name}
+                      </span>
+                      {!g.verified && (
+                        <span className="shrink-0">
+                          <Pill tone="muted">unverified</Pill>
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      <Pill>
                         <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
                         {g.rating.toFixed(1)}
-                      </span>
-                    </div>
-                    <div className="mt-0.5 pl-5 text-xs text-neutral-500">
-                      {g.price_range} · {g.experience_level}
+                      </Pill>
+                      <Pill>{g.price_range}</Pill>
+                      <Pill>{g.experience_level}</Pill>
                       {g.fight_access === "quick" && (
-                        <span className="text-green-600"> · fights easy to get</span>
+                        <Pill tone="accent">
+                          <Swords className="h-3 w-3" />
+                          fights easy
+                        </Pill>
+                      )}
+                      {g.has_accommodation && (
+                        <Pill>
+                          <BedDouble className="h-3 w-3" />
+                          stay on-site
+                        </Pill>
                       )}
                     </div>
                   </button>
