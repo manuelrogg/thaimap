@@ -1,0 +1,41 @@
+import { placesEnabled } from "@/lib/places";
+
+// Photo proxy. Place Photos (New) requires the API key on each media request;
+// proxying server-side keeps the key off the client. We stream Google's image
+// through and set a SHORT cache-control (ToS: no long-term caching of photos).
+//
+// Used only when live photos exist (flag on). With the flag off there are no
+// photo refs pointing here, so this route is never hit.
+
+const BASE = "https://places.googleapis.com/v1";
+
+export async function GET(req: Request): Promise<Response> {
+  if (!placesEnabled()) {
+    return new Response("Places API disabled", { status: 404 });
+  }
+
+  const { searchParams } = new URL(req.url);
+  const name = searchParams.get("name");
+  const w = searchParams.get("w") ?? "800";
+
+  // Expect a Google photo resource name: places/PLACE_ID/photos/PHOTO_RESOURCE
+  if (!name || !/^places\/[^/]+\/photos\/[^/]+$/.test(name)) {
+    return new Response("Bad photo name", { status: 400 });
+  }
+  if (!/^\d{1,4}$/.test(w)) {
+    return new Response("Bad width", { status: 400 });
+  }
+
+  const upstream = `${BASE}/${name}/media?maxWidthPx=${w}&key=${process.env.GOOGLE_PLACES_API_KEY}`;
+  const res = await fetch(upstream);
+  if (!res.ok || !res.body) {
+    return new Response("Upstream photo error", { status: 502 });
+  }
+
+  return new Response(res.body, {
+    headers: {
+      "content-type": res.headers.get("content-type") ?? "image/jpeg",
+      "cache-control": "public, max-age=3600", // short-term only
+    },
+  });
+}
