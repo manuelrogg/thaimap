@@ -25,9 +25,6 @@ const FIT = { padding: 70, duration: 650 } as const;
 // Tighter framing for the country (region) view so Thailand fills the screen.
 const FIT_COUNTRY = { padding: 24, duration: 650 } as const;
 
-// Key Thai places labelled at the country view (basemap labels are off).
-const ANCHOR_CITY_SLUGS = new Set(["bangkok", "chiang-mai", "phuket"]);
-
 type Level = "region" | "city" | "gym";
 
 const FIGHT_LABEL: Record<GymMapDatum["fight_access"], string> = {
@@ -91,7 +88,6 @@ export function MapExplorer({
   const mapRef = useRef<MlMap | null>(null);
   const mlRef = useRef<typeof import("maplibre-gl") | null>(null);
   const regionMarkersRef = useRef<Marker[]>([]);
-  const anchorMarkersRef = useRef<Marker[]>([]);
   const cityMarkersRef = useRef<Marker[]>([]);
   const gymMarkersRef = useRef<Marker[]>([]);
   const popupRef = useRef<Popup | null>(null);
@@ -218,7 +214,7 @@ export function MapExplorer({
       cancelled = true;
       ro?.disconnect();
       popupRef.current?.remove();
-      [regionMarkersRef, anchorMarkersRef, cityMarkersRef, gymMarkersRef].forEach((r) => {
+      [regionMarkersRef, cityMarkersRef, gymMarkersRef].forEach((r) => {
         r.current.forEach((m) => m.remove());
         r.current = [];
       });
@@ -288,31 +284,6 @@ export function MapExplorer({
             new ml.Marker({ element: btn }).setLngLat([r.label.lng, r.label.lat]).addTo(map),
           );
         });
-      }
-
-      // Key Thai city anchor labels — country view only (basemap labels are off).
-      // Non-interactive so they don't block region clicks.
-      anchorMarkersRef.current.forEach((m) => m.remove());
-      anchorMarkersRef.current = [];
-      if (level === "region") {
-        cities
-          .filter((c) => ANCHOR_CITY_SLUGS.has(c.slug))
-          .forEach((city) => {
-            const el = document.createElement("div");
-            el.style.cssText =
-              "pointer-events:none;display:flex;align-items:center;gap:4px;white-space:nowrap;font-size:11px;font-weight:600;color:#1f2937;text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff";
-            const dot = document.createElement("span");
-            dot.style.cssText =
-              "width:5px;height:5px;border-radius:999px;background:#374151;box-shadow:0 0 0 1.5px #fff";
-            const t = document.createElement("span");
-            t.textContent = city.name;
-            el.append(dot, t);
-            anchorMarkersRef.current.push(
-              new ml.Marker({ element: el, anchor: "left" })
-                .setLngLat([city.center.lng, city.center.lat])
-                .addTo(map),
-            );
-          });
       }
 
       // City badges — city level only.
