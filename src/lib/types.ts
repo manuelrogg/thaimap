@@ -85,6 +85,12 @@ export type GymEditorial = {
    * marker and checked before launch. Treat undefined as true (legacy).
    */
   verified: boolean;
+  /** Stadiums/promotions where this gym's fighters regularly compete. */
+  stadiums?: string[];
+  /** Instagram handle without @, e.g. "tigermuaythai". */
+  instagram?: string;
+  /** LINE ID for direct contact. */
+  line_id?: string;
 };
 
 export type GooglePhoto = {

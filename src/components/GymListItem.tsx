@@ -46,6 +46,11 @@ export function GymListItem({ gym, rank }: { gym: Gym; rank: number }) {
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-baseline gap-x-2.5">
           <h3 className="font-semibold text-neutral-900">{gym.name}</h3>
+          {!gym.verified && (
+            <span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-700">
+              unverified
+            </span>
+          )}
           {gym.google && (
             <span className="inline-flex items-center gap-1 text-sm text-neutral-600">
               <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
