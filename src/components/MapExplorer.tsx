@@ -113,7 +113,9 @@ export function MapExplorer({
   // the regions-fill map click (real mouse events propagate to the map),
   // which would reset activeCity → the badge appears to "do nothing".
   const levelRef = useRef<Level>(level);
-  levelRef.current = level;
+  useEffect(() => {
+    levelRef.current = level;
+  }, [level]);
   const regionDef = REGIONS.find((r) => r.id === activeRegion);
   const cityObj = cities.find((c) => c.slug === activeCity);
   const citiesInRegion = useMemo(

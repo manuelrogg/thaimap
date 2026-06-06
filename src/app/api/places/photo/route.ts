@@ -27,15 +27,26 @@ export async function GET(req: Request): Promise<Response> {
   }
 
   const upstream = `${BASE}/${name}/media?maxWidthPx=${w}&key=${process.env.GOOGLE_PLACES_API_KEY}`;
-  const res = await fetch(upstream);
+  const res = await fetch(upstream, { signal: AbortSignal.timeout(8_000) });
   if (!res.ok || !res.body) {
     return new Response("Upstream photo error", { status: 502 });
   }
 
+  const contentType = res.headers.get("content-type") ?? "";
+  if (!contentType.startsWith("image/")) {
+    return new Response("Unexpected upstream content type", { status: 502 });
+  }
+
+  const contentLength = parseInt(res.headers.get("content-length") ?? "0", 10);
+  if (contentLength > 10_000_000) {
+    return new Response("Upstream response too large", { status: 502 });
+  }
+
   return new Response(res.body, {
     headers: {
-      "content-type": res.headers.get("content-type") ?? "image/jpeg",
-      "cache-control": "public, max-age=3600", // short-term only
+      "content-type": contentType,
+      "content-disposition": "inline",
+      "cache-control": "public, max-age=3600", // short-term only (Google ToS)
     },
   });
 }

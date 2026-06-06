@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "playwright test",
     "fetch:islands": "node scripts/fetch-islands.mjs",
     "build:regions": "node scripts/build-regions.mjs",
     "build:mask": "node scripts/build-mask.mjs"
@@ -19,6 +20,7 @@
     "react-dom": "19.2.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
     "@turf/turf": "^7.3.5",
     "@types/node": "^20",
